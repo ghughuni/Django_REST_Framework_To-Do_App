@@ -47,11 +47,21 @@ function show_list() {
       }
       for (let i in list) {
         const edit_btn = document.getElementsByClassName("edit")[i];
+        const delete_btn = document.getElementsByClassName("delete")[i];
+
         edit_btn.addEventListener(
           "click",
           (function (item) {
             return function () {
               edit_item(item);
+            };
+          })(list[i])
+        );
+        delete_btn.addEventListener(
+          "click",
+          (function (item) {
+            return function () {
+              delete_item(item);
             };
           })(list[i])
         );
@@ -103,4 +113,20 @@ function edit_item(item) {
   console.log("item edit clicked: ", item);
   active_item = item;
   document.getElementById("title").value = active_item.title;
+}
+
+// DETELE the item by clicking 'Trash Icon'
+function delete_item(item) {
+  console.log("Delete clicked: ", item);
+  const url = `http://127.0.0.1:8000/api/task-delete/${item.id}/`;
+  fetch(url, {
+    method: "DELETE",
+    headers: {
+      "Content-type": "application/json",
+      "X-CSRFToken": csrftoken,
+    },
+  }).then(function (response) {
+    show_list();
+    document.getElementById("form").reset();
+  });
 }
