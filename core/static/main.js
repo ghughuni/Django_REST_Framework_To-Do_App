@@ -13,8 +13,10 @@ function getCookie(name) {
   }
   return cookieValue;
 }
-const csrftoken = getCookie("csrftoken");
+let csrftoken = getCookie("csrftoken");
+let active_item = null;
 
+// SHOW all tasks from Data
 show_list();
 
 function show_list() {
@@ -43,23 +45,62 @@ function show_list() {
 
         wrapper.innerHTML += item;
       }
+      for (let i in list) {
+        const edit_btn = document.getElementsByClassName("edit")[i];
+        edit_btn.addEventListener(
+          "click",
+          (function (item) {
+            return function () {
+              edit_item(item);
+            };
+          })(list[i])
+        );
+      }
     });
 }
+
+// CREATE new task on form with 'add'
 const form = document.getElementById("form-wrapper");
 form.addEventListener("submit", function (e) {
   e.preventDefault();
   console.log("Form added");
-  const url = "http://127.0.0.1:8000/api/task-create/";
   const title = document.getElementById("title").value;
-  fetch(url, {
-    method: `POST`,
-    headers: {
-      "Content-type": "application/json",
-      "X-CSRFTToken": csrftoken,
-    },
-    body: JSON.stringify({ title: title }),
-  }).then(function (response) {
-    show_list();
-    document.getElementById("form").reset();
-  });
+
+  if (active_item === null) {
+    // Create a new item
+    const url = "http://127.0.0.1:8000/api/task-create/";
+    fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-type": "application/json",
+        "X-CSRFToken": csrftoken,
+      },
+      body: JSON.stringify({ title: title }),
+    }).then(function (response) {
+      show_list();
+      document.getElementById("form").reset();
+    });
+  } else {
+    // Update the existing item
+    const url = `http://127.0.0.1:8000/api/task-update/${active_item.id}/`;
+    fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-type": "application/json",
+        "X-CSRFToken": csrftoken,
+      },
+      body: JSON.stringify({ title: title }),
+    }).then(function (response) {
+      show_list();
+      document.getElementById("form").reset();
+      active_item = null; // Reset active_item after updating
+    });
+  }
 });
+
+// EDIT the item by clicking 'Edit'
+function edit_item(item) {
+  console.log("item edit clicked: ", item);
+  active_item = item;
+  document.getElementById("title").value = active_item.title;
+}
