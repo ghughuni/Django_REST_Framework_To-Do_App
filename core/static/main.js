@@ -31,10 +31,14 @@ function show_list() {
 
       const list = data;
       for (let i in list) {
+        let title = `<div class="title">${list[i].title}</div>`
+        if (list[i].completed == true){
+            title = `<strike class="title">${list[i].title}</strike>`
+        }
         const item = `
                 <div id="data-row-${i}" class="task-wrapper flex wrapper">
                     <div class="d-flex align-items-center flex-grow-1">
-                        <div class="title">${list[i].title}</div>
+                        ${title}
                     </div>
                     <div class="d-flex justify-content-end align-items-center">
                         <button class="btn btn-sm btn-outline-info edit mx-1">Edit</button>
@@ -48,6 +52,7 @@ function show_list() {
       for (let i in list) {
         const edit_btn = document.getElementsByClassName("edit")[i];
         const delete_btn = document.getElementsByClassName("delete")[i];
+        const title = document.getElementsByClassName("title")[i];
 
         edit_btn.addEventListener(
           "click",
@@ -62,6 +67,14 @@ function show_list() {
           (function (item) {
             return function () {
               delete_item(item);
+            };
+          })(list[i])
+        );
+        title.addEventListener(
+          "click",
+          (function (item) {
+            return function () {
+              strike_unstrike(item);
             };
           })(list[i])
         );
@@ -128,5 +141,22 @@ function delete_item(item) {
   }).then(function (response) {
     show_list();
     document.getElementById("form").reset();
+  });
+}
+
+// Cross out completed task
+function strike_unstrike(item) {
+  console.log("strike_unstrike clicked");
+  item.completed = !item.completed;
+  const url = `http://127.0.0.1:8000/api/task-update/${item.id}/`;
+  fetch(url, {
+    method: "POST",
+    headers: {
+      "Content-type": "application/json",
+      "X-CSRFToken": csrftoken,
+    },
+    body: JSON.stringify({ title: item.title, completed: item.completed }),
+  }).then(function (response) {
+    show_list();
   });
 }
