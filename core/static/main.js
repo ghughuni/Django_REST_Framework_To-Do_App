@@ -31,14 +31,18 @@ function show_list() {
 
       const list = data;
       for (let i in list) {
-        let title = `<div class="title">${list[i].title}</div>`
-        if (list[i].completed == true){
-            title = `<strike class="title">${list[i].title}</strike>`
+        let title = `<div class="title">${list[i].title}</div>`;
+        let created_at = `<div class="created_at text-muted">${new Date(
+          list[i].created_at
+        ).toLocaleString()}</div>`;
+        if (list[i].completed == true) {
+          title = `<strike class="title text-danger">${list[i].title}</strike>`;
         }
         const item = `
                 <div id="data-row-${i}" class="task-wrapper flex wrapper">
-                    <div class="d-flex align-items-center flex-grow-1">
-                        ${title}
+                <span>${created_at}</span>
+                    <div class="d-flex align-items-center flex-grow-1 text-dark">
+                    ${title}
                     </div>
                     <div class="d-flex justify-content-end align-items-center">
                         <button class="btn btn-sm btn-outline-info edit mx-1">Edit</button>

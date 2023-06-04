@@ -3,6 +3,7 @@ from django.http import JsonResponse
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from .serializers import TaskSerializer
+from django.utils import timezone
 
 from .models import Task
 # Create your views here.
@@ -21,7 +22,7 @@ def apiOverview(request):
 
 @api_view(['GET'])
 def taskList(request):
-	tasks = Task.objects.all().order_by('-id')
+	tasks = Task.objects.all().order_by('-created_at')
 	serializer = TaskSerializer(tasks, many=True)
 	return Response(serializer.data)
 
@@ -44,6 +45,7 @@ def taskCreate(request):
 @api_view(['POST'])
 def taskUpdate(request, pk):
 	task = Task.objects.get(id=pk)
+	task.created_at = timezone.now() 
 	serializer = TaskSerializer(instance=task, data=request.data)
 
 	if serializer.is_valid():
