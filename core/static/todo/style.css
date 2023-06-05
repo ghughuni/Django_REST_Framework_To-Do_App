@@ -34,10 +34,24 @@ body {
     display: flex;
 }
 
-/* .task-wrapper{
+.task-wrapper{
     margin:5px;
     padding: 5px;
     padding:20px;
     cursor: pointer;
     border-bottom: 1px solid  #e9e9e9;
-} */
+    color: #686868;
+}
+
+.task-wrapper:hover {
+    background-color: #e9e9e9;
+}
+
+button:hover {
+    box-shadow: 0 0px 15px rgba(0,0,0,0.25);
+}
+
+#submit:hover{
+    box-shadow: 0 0px 15px rgba(0,0,0,0.25);
+    color: #686868;
+}
